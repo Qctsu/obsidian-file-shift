@@ -1,20 +1,20 @@
-/* Drag Reorder — visual indicators */
+/* FileShift — visual indicators */
 
 /* Drop zone indicators */
-.dr-drop-above {
+.fs-drop-above {
   box-shadow: 0 -2px 0 0 var(--interactive-accent) !important;
 }
 
-.dr-drop-below {
+.fs-drop-below {
   box-shadow: 0 2px 0 0 var(--interactive-accent) !important;
 }
 
 /* Item being dragged */
-.dr-dragging {
+.fs-dragging {
   opacity: 0.4;
 }
 
 /* Active ribbon icon */
-.side-dock-ribbon-action.dr-active {
+.side-dock-ribbon-action.fs-active {
   color: var(--interactive-accent);
 }

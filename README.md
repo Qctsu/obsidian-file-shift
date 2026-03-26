@@ -1,4 +1,4 @@
-# Obsidian Drag & Drop Reorder
+# FileShift
 
 Reorder files and folders in Obsidian's File Explorer using drag and drop. No filename prefixes, no hacks — just drag items where you want them.
 
@@ -17,15 +17,15 @@ Reorder files and folders in Obsidian's File Explorer using drag and drop. No fi
 ### Via BRAT (recommended)
 
 1. Install [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin
-2. Add this repo: `Qctsu/obsidian-drag-reorder`
-3. Enable "Drag & Drop Reorder" in Community Plugins
+2. Add this repo: `Qctsu/obsidian-file-shift`
+3. Enable "FileShift" in Community Plugins
 
 ### Manual
 
 1. Download `main.js`, `manifest.json`, and `styles.css` from the latest release
-2. Create folder `.obsidian/plugins/drag-reorder/` in your vault
+2. Create folder `.obsidian/plugins/file-shift/` in your vault
 3. Copy the files there
-4. Enable "Drag & Drop Reorder" in Community Plugins settings
+4. Enable "FileShift" in Community Plugins settings
 
 ## Usage
 
@@ -38,7 +38,7 @@ Reorder files and folders in Obsidian's File Explorer using drag and drop. No fi
 
 | Command | Description |
 |---------|-------------|
-| **Toggle custom ordering on/off** | Enable/disable drag reorder mode |
+| **Toggle custom ordering on/off** | Enable/disable FileShift |
 | **Reset all custom ordering** | Clear all saved orders, revert to default sort |
 
 ## How it works

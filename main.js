@@ -8,7 +8,7 @@ const DEFAULT_DATA = {
   order: {}
 };
 
-class DragReorderPlugin extends obsidian.Plugin {
+class FileShiftPlugin extends obsidian.Plugin {
 
   async onload() {
     const saved = await this.loadData();
@@ -24,7 +24,7 @@ class DragReorderPlugin extends obsidian.Plugin {
     // Ribbon icon (toggle)
     this.ribbonEl = this.addRibbonIcon(
       'arrow-up-down',
-      'Drag Reorder: OFF',
+      'FileShift: OFF',
       () => this.toggle()
     );
 
@@ -42,7 +42,7 @@ class DragReorderPlugin extends obsidian.Plugin {
         this.data.order = {};
         this.save();
         if (this.isActive) this.restoreDefaultSort();
-        new obsidian.Notice('Custom order reset');
+        new obsidian.Notice('FileShift: order reset');
       }
     });
 
@@ -105,7 +105,7 @@ class DragReorderPlugin extends obsidian.Plugin {
 
     const explorer = this.getExplorer();
     if (!explorer) {
-      new obsidian.Notice('File Explorer not found — open it first');
+      new obsidian.Notice('File Explorer not found');
       return;
     }
 
@@ -113,15 +113,15 @@ class DragReorderPlugin extends obsidian.Plugin {
     this.data.active = true;
     this.save();
 
-    this.ribbonEl.setAttribute('aria-label', 'Drag Reorder: ON');
+    this.ribbonEl.setAttribute('aria-label', 'FileShift: ON');
     this.ribbonEl.addClass('is-active');
-    this.ribbonEl.addClass('dr-active');
+    this.ribbonEl.addClass('fs-active');
 
     this.patchSort(explorer);
     this.setupDragHandlers();
     this.applyAllOrders();
 
-    new obsidian.Notice('Drag Reorder: ON');
+    new obsidian.Notice('FileShift: ON');
   }
 
   deactivate() {
@@ -131,14 +131,14 @@ class DragReorderPlugin extends obsidian.Plugin {
     this.data.active = false;
     this.save();
 
-    this.ribbonEl.setAttribute('aria-label', 'Drag Reorder: OFF');
+    this.ribbonEl.setAttribute('aria-label', 'FileShift: OFF');
     this.ribbonEl.removeClass('is-active');
-    this.ribbonEl.removeClass('dr-active');
+    this.ribbonEl.removeClass('fs-active');
 
     this.cleanup();
     this.restoreDefaultSort();
 
-    new obsidian.Notice('Drag Reorder: OFF');
+    new obsidian.Notice('FileShift: OFF');
   }
 
   cleanup() {
@@ -274,9 +274,9 @@ class DragReorderPlugin extends obsidian.Plugin {
 
     const titles = container.querySelectorAll('.nav-file-title, .nav-folder-title');
     titles.forEach(el => {
-      if (!el.hasAttribute('data-dr')) {
+      if (!el.hasAttribute('data-fs')) {
         el.setAttribute('draggable', 'true');
-        el.setAttribute('data-dr', '1');
+        el.setAttribute('data-fs', '1');
       }
     });
   }
@@ -285,8 +285,8 @@ class DragReorderPlugin extends obsidian.Plugin {
     const container = this.getNavContainer();
     if (!container) return;
 
-    container.querySelectorAll('[data-dr]').forEach(el => {
-      el.removeAttribute('data-dr');
+    container.querySelectorAll('[data-fs]').forEach(el => {
+      el.removeAttribute('data-fs');
     });
   }
 
@@ -294,11 +294,11 @@ class DragReorderPlugin extends obsidian.Plugin {
     const container = this.getNavContainer();
     if (!container) return;
 
-    container.querySelectorAll('.dr-drop-above, .dr-drop-below').forEach(el => {
-      el.classList.remove('dr-drop-above', 'dr-drop-below');
+    container.querySelectorAll('.fs-drop-above, .fs-drop-below').forEach(el => {
+      el.classList.remove('fs-drop-above', 'fs-drop-below');
     });
-    container.querySelectorAll('.dr-dragging').forEach(el => {
-      el.classList.remove('dr-dragging');
+    container.querySelectorAll('.fs-dragging').forEach(el => {
+      el.classList.remove('fs-dragging');
     });
   }
 
@@ -334,7 +334,7 @@ class DragReorderPlugin extends obsidian.Plugin {
     };
 
     const item = title.closest('.nav-file, .nav-folder');
-    if (item) item.classList.add('dr-dragging');
+    if (item) item.classList.add('fs-dragging');
   }
 
   // Helper: is event target inside file explorer?
@@ -396,7 +396,7 @@ class DragReorderPlugin extends obsidian.Plugin {
     const position = ratio < 0.5 ? 'above' : 'below';
 
     this.clearDropIndicators();
-    title.classList.add(position === 'above' ? 'dr-drop-above' : 'dr-drop-below');
+    title.classList.add(position === 'above' ? 'fs-drop-above' : 'fs-drop-below');
 
     // Keep source item visually dragged
     const container = this.getNavContainer();
@@ -405,7 +405,7 @@ class DragReorderPlugin extends obsidian.Plugin {
     );
     if (dragItem) {
       const item = dragItem.closest('.nav-file, .nav-folder');
-      if (item) item.classList.add('dr-dragging');
+      if (item) item.classList.add('fs-dragging');
     }
 
     this.dragState.pendingDrop = {
@@ -414,12 +414,12 @@ class DragReorderPlugin extends obsidian.Plugin {
     };
   }
 
-  // Only clears drop lines, NOT the dr-dragging class on source
+  // Only clears drop lines, NOT the fs-dragging class on source
   clearDropIndicators() {
     const container = this.getNavContainer();
     if (!container) return;
-    container.querySelectorAll('.dr-drop-above, .dr-drop-below').forEach(el => {
-      el.classList.remove('dr-drop-above', 'dr-drop-below');
+    container.querySelectorAll('.fs-drop-above, .fs-drop-below').forEach(el => {
+      el.classList.remove('fs-drop-above', 'fs-drop-below');
     });
   }
 
@@ -467,8 +467,8 @@ class DragReorderPlugin extends obsidian.Plugin {
   finishDrag() {
     const container = this.getNavContainer();
     if (container) {
-      container.querySelectorAll('.dr-dragging').forEach(el => {
-        el.classList.remove('dr-dragging');
+      container.querySelectorAll('.fs-dragging').forEach(el => {
+        el.classList.remove('fs-dragging');
       });
     }
     this.dragState = null;
@@ -700,4 +700,4 @@ class DragReorderPlugin extends obsidian.Plugin {
   }
 }
 
-module.exports = DragReorderPlugin;
+module.exports = FileShiftPlugin;
