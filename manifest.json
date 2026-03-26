@@ -1,0 +1,9 @@
+{
+  "id": "drag-reorder",
+  "name": "Drag & Drop Reorder",
+  "version": "1.0.0",
+  "minAppVersion": "1.7.2",
+  "description": "Reorder files and folders in File Explorer with drag and drop. No filename changes.",
+  "author": "Carl",
+  "isDesktopOnly": false
+}

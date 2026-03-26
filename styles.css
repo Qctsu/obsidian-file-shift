@@ -1,0 +1,20 @@
+/* Drag Reorder — visual indicators */
+
+/* Drop zone indicators */
+.dr-drop-above {
+  box-shadow: 0 -2px 0 0 var(--interactive-accent) !important;
+}
+
+.dr-drop-below {
+  box-shadow: 0 2px 0 0 var(--interactive-accent) !important;
+}
+
+/* Item being dragged */
+.dr-dragging {
+  opacity: 0.4;
+}
+
+/* Active ribbon icon */
+.side-dock-ribbon-action.dr-active {
+  color: var(--interactive-accent);
+}
