@@ -9,6 +9,12 @@
   box-shadow: 0 2px 0 0 var(--interactive-accent) !important;
 }
 
+/* Drop INTO folder indicator */
+.fs-drop-into {
+  background-color: hsla(var(--interactive-accent-hsl), 0.15) !important;
+  border-radius: 4px;
+}
+
 /* Item being dragged */
 .fs-dragging {
   opacity: 0.4;

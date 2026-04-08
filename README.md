@@ -7,6 +7,7 @@ Reorder files and folders in Obsidian's File Explorer using drag and drop. No fi
 ## Features
 
 - **Drag & drop** files and folders to reorder them within the same parent
+- **Move files into folders** — drag to center of a folder to move it there (Obsidian native behavior preserved)
 - **Persistent order** — survives restarts, saved in plugin data
 - **Toggle on/off** via ribbon icon or command palette
 - **Works with virtual scroll** — uses Obsidian's internal `vChildren` API for reliable rendering
@@ -31,8 +32,9 @@ Reorder files and folders in Obsidian's File Explorer using drag and drop. No fi
 
 1. Click the ↕ ribbon icon (or use command palette: "Toggle custom ordering on/off")
 2. Drag files/folders to reorder them
-3. Drop indicator shows above/below target position
-4. Order persists automatically
+3. **Reorder**: drop on top/bottom edge of an item → reorder indicator (line above/below)
+4. **Move into folder**: drop on center of a folder → highlight indicator, file moves into that folder
+5. Order persists automatically
 
 ## Commands
 
@@ -45,7 +47,7 @@ Reorder files and folders in Obsidian's File Explorer using drag and drop. No fi
 
 When active, the plugin:
 - Intercepts drag events in the file explorer (capture phase)
-- Blocks Obsidian's native drag-to-move-into-folder behavior for sibling reordering
+- Uses 3-zone detection on folders: top 25% = reorder above, middle 50% = move into folder (Obsidian native), bottom 25% = reorder below
 - Uses Obsidian's `vChildren.setChildren()` API + `InfinityScroll` invalidation for reliable DOM updates
 - Stores order per-folder in `data.json`
 

@@ -1,7 +1,7 @@
 {
   "id": "file-shift",
   "name": "FileShift",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "minAppVersion": "1.7.2",
   "description": "Reorder files and folders in File Explorer with drag and drop. No filename changes.",
   "author": "Qctsu",

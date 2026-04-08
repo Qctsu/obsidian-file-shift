@@ -294,8 +294,8 @@ class FileShiftPlugin extends obsidian.Plugin {
     const container = this.getNavContainer();
     if (!container) return;
 
-    container.querySelectorAll('.fs-drop-above, .fs-drop-below').forEach(el => {
-      el.classList.remove('fs-drop-above', 'fs-drop-below');
+    container.querySelectorAll('.fs-drop-above, .fs-drop-below, .fs-drop-into').forEach(el => {
+      el.classList.remove('fs-drop-above', 'fs-drop-below', 'fs-drop-into');
     });
     container.querySelectorAll('.fs-dragging').forEach(el => {
       el.classList.remove('fs-dragging');
@@ -347,7 +347,11 @@ class FileShiftPlugin extends obsidian.Plugin {
     if (!this.dragState) return;
     if (!this.isInsideExplorer(e)) return;
 
-    // Block Obsidian from auto-expanding folders
+    // Allow dragenter for folder targets (enables drop-into-folder)
+    const title = this.findTitle(e);
+    if (title && title.classList.contains('nav-folder-title')) return;
+
+    // Block for non-folder items during reorder
     e.preventDefault();
     e.stopPropagation();
   }
@@ -356,20 +360,15 @@ class FileShiftPlugin extends obsidian.Plugin {
     if (!this.dragState) return;
 
     if (!this.isInsideExplorer(e)) {
-      // Outside file explorer — clear state but let event pass through
       this.clearDropIndicators();
       if (this.dragState) this.dragState.pendingDrop = null;
       return;
     }
 
-    // ── ALWAYS block Obsidian inside explorer during our drag ──
-    e.preventDefault();
-    e.stopPropagation();
-    e.dataTransfer.dropEffect = 'move';
-
-    // Now check if we have a valid reorder target
     const title = this.findTitle(e);
     if (!title) {
+      e.preventDefault();
+      e.stopPropagation();
       this.clearDropIndicators();
       if (this.dragState) this.dragState.pendingDrop = null;
       return;
@@ -377,12 +376,26 @@ class FileShiftPlugin extends obsidian.Plugin {
 
     const path = title.getAttribute('data-path');
     if (!path || path === this.dragState.path) {
+      e.preventDefault();
+      e.stopPropagation();
       this.clearDropIndicators();
       if (this.dragState) this.dragState.pendingDrop = null;
       return;
     }
 
-    // Only reorder within same parent
+    const isFolder = title.classList.contains('nav-folder-title');
+    const rect = title.getBoundingClientRect();
+    const ratio = (e.clientY - rect.top) / rect.height;
+
+    // Folder center zone (middle 50%) → drop INTO folder, let Obsidian handle
+    if (isFolder && ratio > 0.25 && ratio < 0.75) {
+      this.clearDropIndicators();
+      title.classList.add('fs-drop-into');
+      if (this.dragState) this.dragState.pendingDrop = null;
+      return;
+    }
+
+    // Reorder zone — only within same parent
     const parentPath = this.getParentPath(path);
     if (parentPath !== this.dragState.parentPath) {
       this.clearDropIndicators();
@@ -390,10 +403,14 @@ class FileShiftPlugin extends obsidian.Plugin {
       return;
     }
 
-    // Same parent sibling — 50/50 above/below
-    const rect = title.getBoundingClientRect();
-    const ratio = (e.clientY - rect.top) / rect.height;
-    const position = ratio < 0.5 ? 'above' : 'below';
+    // ── Same parent sibling — reorder ──
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+
+    const position = isFolder
+      ? (ratio < 0.25 ? 'above' : 'below')
+      : (ratio < 0.5 ? 'above' : 'below');
 
     this.clearDropIndicators();
     title.classList.add(position === 'above' ? 'fs-drop-above' : 'fs-drop-below');
@@ -418,8 +435,8 @@ class FileShiftPlugin extends obsidian.Plugin {
   clearDropIndicators() {
     const container = this.getNavContainer();
     if (!container) return;
-    container.querySelectorAll('.fs-drop-above, .fs-drop-below').forEach(el => {
-      el.classList.remove('fs-drop-above', 'fs-drop-below');
+    container.querySelectorAll('.fs-drop-above, .fs-drop-below, .fs-drop-into').forEach(el => {
+      el.classList.remove('fs-drop-above', 'fs-drop-below', 'fs-drop-into');
     });
   }
 
@@ -427,21 +444,26 @@ class FileShiftPlugin extends obsidian.Plugin {
     if (!this.dragState) return;
     if (!this.isInsideExplorer(e)) return;
 
-    // ALWAYS block Obsidian's drop inside explorer
+    // No pending reorder → let Obsidian handle (e.g., move into folder)
+    if (!this.dragState.pendingDrop) {
+      this.clearIndicators();
+      this.finishDrag();
+      if (this.isActive) this.scheduleRefresh();
+      return;
+    }
+
+    // Block Obsidian's drop and do our reorder
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
 
-    // Execute reorder if we have a valid target
-    if (this.dragState.pendingDrop) {
-      const { targetName, position } = this.dragState.pendingDrop;
-      this.reorderItem(
-        this.dragState.parentPath,
-        this.dragState.name,
-        targetName,
-        position
-      );
-    }
+    const { targetName, position } = this.dragState.pendingDrop;
+    this.reorderItem(
+      this.dragState.parentPath,
+      this.dragState.name,
+      targetName,
+      position
+    );
 
     this.clearIndicators();
     this.finishDrag();
